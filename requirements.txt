@@ -1,0 +1,12 @@
+ragas
+deepeval
+google-genai
+pandas
+numpy
+pyyaml
+boto3
+pytest
+pytest-cov
+python-dotenv
+requests
+rich

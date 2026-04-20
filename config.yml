@@ -1,0 +1,12 @@
+thresholds:
+  faithfulness: 0.85
+  answer_relevance: 0.80
+  context_recall: 0.75
+  context_precision: 0.78
+models:
+  judge: gemini-2.5-flash
+  embedding: gemini-embedding-001
+settings:
+  golden_set_path: datasets/golden_set.json
+  results_output: results/eval_results.json
+  fail_on_threshold: true

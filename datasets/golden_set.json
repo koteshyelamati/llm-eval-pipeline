@@ -1,0 +1,252 @@
+[
+  {
+    "id": "q001",
+    "question": "What is MongoDB Atlas Vector Search and how does it store vector embeddings?",
+    "ground_truth": "MongoDB Atlas Vector Search is a feature that enables semantic search by storing and indexing vector embeddings alongside document data. Embeddings are stored as BSON array fields of type double within regular MongoDB documents. Atlas creates an approximate nearest neighbor (ANN) index using the HNSW algorithm to efficiently query high-dimensional vectors.",
+    "contexts": [
+      "MongoDB Atlas Vector Search allows you to store vector embeddings directly in MongoDB documents as BSON double arrays. The feature integrates with the Atlas Search infrastructure and builds a vector index using the Hierarchical Navigable Small World (HNSW) algorithm for approximate nearest neighbor retrieval.",
+      "To use Atlas Vector Search, you define a vector index on a collection field, specifying the number of dimensions and the similarity metric (cosine, euclidean, or dotProduct). Queries use the $vectorSearch aggregation stage to find the top-k nearest neighbors to a given query vector."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q002",
+    "question": "How does Redis implement caching with TTL-based expiration?",
+    "ground_truth": "Redis supports TTL-based expiration by associating a timeout with any key using the EXPIRE or EXPIREAT commands. Once the TTL elapses, Redis automatically deletes the key through either lazy deletion (checked on access) or active expiration (periodic sampling). This makes Redis well-suited for session caches, rate limiters, and API response caches.",
+    "contexts": [
+      "Redis key expiration is set with the EXPIRE command (seconds) or PEXPIRE (milliseconds). When a key's TTL reaches zero, Redis uses two mechanisms to remove it: lazy expiration checks the key when it is accessed, and active expiration periodically samples random keys and deletes expired ones.",
+      "Common Redis caching patterns include cache-aside (application checks cache before DB), write-through (writes go to cache and DB simultaneously), and write-behind (writes buffered in cache, flushed to DB asynchronously). TTL configuration prevents stale data from persisting beyond a defined window."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q003",
+    "question": "What chunking strategies are recommended for RAG pipelines processing long documents?",
+    "ground_truth": "Common chunking strategies for RAG include fixed-size chunking (splitting by token count with overlap), recursive character splitting (splitting on paragraph then sentence boundaries), and semantic chunking (grouping sentences by embedding similarity). Chunk size and overlap are critical hyperparameters: smaller chunks improve precision but lose context, while larger chunks retain context but may dilute relevance scores.",
+    "contexts": [
+      "Fixed-size chunking splits documents into chunks of N tokens with an overlap of M tokens to preserve context across boundaries. Recursive character splitting prioritizes splitting on double newlines, then single newlines, then spaces, progressively shrinking until the chunk fits the target size.",
+      "Semantic chunking computes embeddings for each sentence and groups consecutive sentences whose cosine similarity stays above a threshold. This preserves topical coherence at the cost of variable chunk sizes. Chunk size typically ranges from 256 to 1024 tokens, with 128-token overlap being common for retrieval-augmented generation tasks."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q004",
+    "question": "How does cosine similarity work for comparing vector embeddings?",
+    "ground_truth": "Cosine similarity measures the cosine of the angle between two vectors, computed as the dot product of the vectors divided by the product of their magnitudes. It returns a value between -1 and 1, where 1 means identical direction, 0 means orthogonal, and -1 means opposite. For normalized unit vectors, cosine similarity equals the dot product, making it computationally efficient for embedding comparisons.",
+    "contexts": [
+      "Cosine similarity is defined as cos(θ) = (A · B) / (||A|| × ||B||), where A · B is the dot product and ||A||, ||B|| are the L2 norms. It is a direction-based metric, so two vectors pointing in the same direction score 1.0 regardless of magnitude, making it robust to differences in text length.",
+      "In embedding search systems, documents and queries are often pre-normalized to unit length so that the dot product equals cosine similarity directly. This allows matrix multiplication (e.g., numpy.dot) to compute similarity for all candidates in one operation, significantly speeding up nearest-neighbor retrieval."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q005",
+    "question": "What is LLM routing and when should you use it in a production RAG system?",
+    "ground_truth": "LLM routing directs queries to different language models based on complexity, cost, or latency requirements. Simple factual queries can be routed to cheaper, faster models while complex reasoning tasks are sent to more capable ones. Production RAG systems use routing to balance cost and quality, typically classifying queries with a lightweight model or rule-based heuristics before dispatching.",
+    "contexts": [
+      "LLM routing is a strategy where an orchestration layer classifies each incoming query and dispatches it to the most appropriate model. A lightweight classifier or embedding similarity check determines whether the query requires a large frontier model or can be answered by a smaller, cheaper model.",
+      "Common routing signals include query complexity score, token length, topic category, and user tier. For example, a RAG system might send simple keyword lookups to a 7B parameter model and multi-step reasoning questions to a 70B or frontier model, reducing average cost per query by 40–60% while maintaining quality for complex cases."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q006",
+    "question": "How do you authenticate and make a text generation call with the Gemini API using Python?",
+    "ground_truth": "Authentication with the Gemini API uses an API key obtained from Google AI Studio, passed either via the GEMINI_API_KEY environment variable or directly to the google-genai client. A generation call is made by instantiating a GenerativeModel with the desired model name and calling generate_content with a prompt string. The response object exposes the generated text through response.text.",
+    "contexts": [
+      "To use the Gemini API with the google-genai Python SDK, install the package and configure your API key: import google.generativeai as genai; genai.configure(api_key=os.environ['GEMINI_API_KEY']). Then instantiate a model: model = genai.GenerativeModel('gemini-2.5-flash').",
+      "A basic generation call is made with response = model.generate_content('Your prompt here'). Access the result via response.text. For streaming responses, use model.generate_content(..., stream=True) and iterate over response chunks, accessing chunk.text for each partial result."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q007",
+    "question": "How do you build a streaming endpoint in FastAPI?",
+    "ground_truth": "FastAPI supports streaming responses via the StreamingResponse class, which accepts an async generator that yields bytes or strings. The generator is called lazily as the client reads, enabling token-by-token LLM output without buffering the full response. The media_type parameter should be set to text/event-stream for Server-Sent Events or application/json for NDJSON.",
+    "contexts": [
+      "In FastAPI, a streaming endpoint is created by returning a StreamingResponse with an async generator: async def token_stream(): async for token in llm.stream(prompt): yield token. The endpoint function returns StreamingResponse(token_stream(), media_type='text/event-stream').",
+      "FastAPI's StreamingResponse uses Starlette's streaming infrastructure under the hood. For LLM token streaming, each yielded value is sent to the client immediately. To conform to the SSE protocol, each chunk should be formatted as 'data: {token}\\n\\n', with a final 'data: [DONE]\\n\\n' sentinel."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q008",
+    "question": "What are the key differences between embedding models and generative models?",
+    "ground_truth": "Embedding models encode text into dense fixed-dimensional vectors that capture semantic meaning, designed for similarity search and retrieval. Generative models produce new token sequences given an input context, designed for text completion, summarization, and dialogue. Embedding models are typically encoder-only (e.g., BERT-style) and run faster and cheaper than generative models, which use decoder or encoder-decoder architectures.",
+    "contexts": [
+      "Embedding models (also called bi-encoders) pass input text through a transformer encoder and pool the output into a single dense vector, typically 384 to 3072 dimensions. They are optimized with contrastive losses (e.g., triplet loss, InfoNCE) on large corpora of semantically similar pairs.",
+      "Generative models use autoregressive decoding to produce text one token at a time, each step conditioned on all previous tokens. They require significantly more compute per request than embedding models. In RAG systems, embedding models handle retrieval while a generative model produces the final answer grounded in retrieved context."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q009",
+    "question": "How do you deploy a Python function to AWS Lambda with a container image?",
+    "ground_truth": "AWS Lambda supports container images up to 10 GB, allowing deployment of complex Python environments. You package your code as a Docker image based on an AWS-provided Python base image, implement a handler function matching the Lambda signature, and push the image to Amazon ECR. The Lambda function is then configured to use the ECR image URI as its deployment package.",
+    "contexts": [
+      "To deploy to Lambda via container: create a Dockerfile FROM public.ecr.aws/lambda/python:3.12, COPY your code and requirements.txt, RUN pip install -r requirements.txt, and set CMD ['handler_module.handler']. Build and push to ECR with docker build, docker tag, and docker push after authenticating with aws ecr get-login-password.",
+      "The Lambda handler function receives event and context arguments. For API Gateway integration, event contains the HTTP request fields (httpMethod, path, body, headers). The handler returns a dict with statusCode, headers, and body. Cold start times for container-based Lambdas are higher than zip-based deployments but can be mitigated with provisioned concurrency."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q010",
+    "question": "What is Kafka consumer group and how does partition assignment work?",
+    "ground_truth": "A Kafka consumer group is a set of consumers that jointly consume a topic by each being assigned exclusive ownership of one or more partitions. Kafka's group coordinator uses the rebalance protocol to distribute partitions among active group members, ensuring each partition is consumed by exactly one consumer in the group. When a consumer joins or leaves, a rebalance is triggered to reassign partitions.",
+    "contexts": [
+      "In Kafka, a consumer group is identified by a group.id string. Each partition of a subscribed topic is assigned to exactly one consumer within the group at any time, enabling parallel processing scaled by partition count. A consumer can be assigned multiple partitions if there are fewer consumers than partitions.",
+      "Partition assignment is managed by the group coordinator broker and executed by a group leader (the first consumer to join). Assignment strategies include RangeAssignor (sequential partition ranges per consumer), RoundRobinAssignor (round-robin across all partitions), and StickyAssignor (minimizes reassignments during rebalances). Consumer group offsets are committed to the __consumer_offsets internal topic."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q011",
+    "question": "How do Python async/await and the event loop enable concurrent I/O operations?",
+    "ground_truth": "Python's asyncio event loop runs coroutines cooperatively on a single thread, switching between them at await points where I/O is pending. When a coroutine awaits an I/O operation, the event loop suspends it and runs other ready coroutines, resuming the original when the I/O completes. This enables handling thousands of concurrent connections without the overhead of OS threads.",
+    "contexts": [
+      "The asyncio event loop is a single-threaded scheduler that executes coroutines defined with async def. When a coroutine hits an await expression, control returns to the loop, which can then run other ready tasks. asyncio.gather() schedules multiple coroutines concurrently and waits for all to complete, with results returned in order.",
+      "For CPU-bound tasks, asyncio.run_in_executor() offloads work to a thread pool (default) or process pool without blocking the event loop. True parallelism for CPU work requires multiprocessing or ProcessPoolExecutor. I/O-bound operations like HTTP requests, database queries, and file reads benefit most from asyncio's cooperative concurrency model."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q012",
+    "question": "What is a RAG pipeline and what are its core stages?",
+    "ground_truth": "A Retrieval-Augmented Generation (RAG) pipeline enhances LLM responses by grounding them in retrieved external knowledge. Its core stages are ingestion (chunking and embedding documents into a vector store), retrieval (embedding the query and finding top-k similar chunks), and generation (passing retrieved chunks as context to the LLM to produce a grounded answer). This reduces hallucinations and keeps responses up-to-date without retraining the model.",
+    "contexts": [
+      "A RAG pipeline begins with an offline ingestion phase: documents are split into chunks, each chunk is passed through an embedding model to produce a vector, and vectors are stored in a vector database alongside the chunk text. Common vector stores include Pinecone, Weaviate, MongoDB Atlas, and pgvector.",
+      "At query time, the user's question is embedded with the same model, and the top-k chunks with highest cosine similarity are retrieved. These chunks are formatted into a context window prompt such as 'Answer based on: {context}\\nQuestion: {question}' and sent to the LLM, which generates a response grounded in the retrieved evidence."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q013",
+    "question": "How do you configure multi-stage Docker builds to minimize image size for Python apps?",
+    "ground_truth": "Multi-stage Docker builds use multiple FROM instructions in a single Dockerfile, allowing build dependencies to be discarded before the final image. A common Python pattern uses a builder stage to install dependencies into a virtual environment, then copies only the venv into a slim final image. This can reduce image size from over 1 GB to under 200 MB by excluding compilers, header files, and pip cache.",
+    "contexts": [
+      "A multi-stage Dockerfile for Python starts with FROM python:3.12 AS builder, creates a venv with python -m venv /opt/venv, and installs requirements. The final stage uses FROM python:3.12-slim, copies COPY --from=builder /opt/venv /opt/venv, and sets ENV PATH=/opt/venv/bin:$PATH. No build tools are included in the final image.",
+      "To further reduce size, use .dockerignore to exclude __pycache__, .git, tests, and docs directories. Alpine-based images (python:3.12-alpine) are smaller but may require compilation of C extensions. The slim variant (python:3.12-slim) is a safer choice as it retains glibc compatibility, avoiding common extension incompatibilities."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q014",
+    "question": "What CI/CD pipeline steps are essential for a Python machine learning project?",
+    "ground_truth": "An ML project CI/CD pipeline should include dependency installation, linting and formatting checks, unit and integration tests with coverage thresholds, model evaluation against a held-out benchmark, and container image build and push on main branch merges. Evaluation gates prevent regressions by failing the pipeline if metric scores drop below defined thresholds before deployment.",
+    "contexts": [
+      "A GitHub Actions workflow for an ML project typically defines jobs: lint (ruff/black check), test (pytest with --cov and a minimum coverage gate), and evaluate (run eval suite and compare to thresholds stored in config.yml). The evaluate job uploads metrics as artifacts and posts a summary to the PR using the GitHub API.",
+      "Container build and push jobs run only on merges to main. They build the Docker image, run a smoke test against the container, tag with the git SHA and latest, and push to ECR or Docker Hub. Deployment to staging is triggered automatically; production deployment requires a manual approval step configured as a GitHub Actions environment with required reviewers."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q015",
+    "question": "How does the gemini-embedding-001 model differ from text-embedding-004 for RAG use cases?",
+    "ground_truth": "gemini-embedding-001 is Google's dedicated embedding model optimized for retrieval tasks, supporting up to 3072 output dimensions and a 2048-token input window. text-embedding-004 is an earlier model with 768 dimensions and is better suited for classification and clustering tasks. For RAG pipelines requiring high-precision retrieval over long documents, gemini-embedding-001's higher dimensionality and task-type parameter provide better performance.",
+    "contexts": [
+      "Google's gemini-embedding-001 model supports configurable output dimensions (768, 1536, or 3072) via the output_dimensionality parameter, allowing a trade-off between storage cost and retrieval accuracy. It accepts a task_type parameter (RETRIEVAL_DOCUMENT, RETRIEVAL_QUERY, SEMANTIC_SIMILARITY, CLASSIFICATION) to optimize the embedding for the intended use.",
+      "text-embedding-004 produces 768-dimensional embeddings and supports a 2048-token input, performing well on the MTEB benchmark for classification and semantic similarity. For RAG retrieval tasks, gemini-embedding-001 with task_type='RETRIEVAL_QUERY' for queries and 'RETRIEVAL_DOCUMENT' for indexed chunks yields measurably higher recall at standard retrieval cutoffs."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q016",
+    "question": "What is HNSW and why is it used for approximate nearest neighbor search?",
+    "ground_truth": "Hierarchical Navigable Small World (HNSW) is a graph-based ANN index that organizes vectors in a multi-layer proximity graph, enabling logarithmic-time approximate nearest neighbor search. Each node connects to a fixed number of neighbors (M) at each layer, with higher layers providing long-range shortcuts for fast traversal. HNSW achieves high recall with low latency and is the dominant ANN algorithm used in production vector databases.",
+    "contexts": [
+      "HNSW builds a layered graph where each vector is a node. The bottom layer contains all vectors with short-range edges; upper layers contain progressively fewer nodes with longer-range edges, similar to a skip list. Search starts at the top layer, greedily navigating toward the query, then descends to finer layers for the final candidates.",
+      "Key HNSW hyperparameters are M (number of bidirectional edges per node, typically 16–64) and ef_construction (beam width during index build, typically 100–200). Higher M increases recall and memory usage; higher ef_construction increases build time and recall. At query time, ef_search controls the candidate pool size, trading latency for recall."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q017",
+    "question": "How do you implement a Redis cache layer for LLM API responses to reduce latency and cost?",
+    "ground_truth": "An LLM response cache stores the model's output keyed by a hash of the input prompt, returning cached results for identical or near-identical queries without calling the API. Exact-match caching uses a deterministic hash (e.g., SHA-256 of the normalized prompt) as the Redis key with a configurable TTL. Semantic caching extends this by embedding the query and checking cosine similarity against cached embeddings, returning cached answers for semantically equivalent questions.",
+    "contexts": [
+      "For exact-match LLM caching in Redis: normalize the prompt (strip whitespace, lowercase), compute hashlib.sha256(prompt.encode()).hexdigest() as the key, and call redis_client.get(key). On a cache miss, call the LLM API, store the response with redis_client.setex(key, ttl_seconds, response_text), and return it.",
+      "Semantic caching requires an additional Redis index (e.g., using Redis Stack's vector similarity search). Embed the incoming query, search the cache index for the nearest stored query vector, and if cosine similarity exceeds a threshold (e.g., 0.95), return the associated cached response. This handles paraphrased queries that would be cache misses with exact-match hashing."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q018",
+    "question": "What Kafka producer settings control throughput and durability trade-offs?",
+    "ground_truth": "Kafka producer throughput and durability are controlled by acks, batch.size, linger.ms, and compression.type. Setting acks=all requires acknowledgment from all in-sync replicas, maximizing durability at the cost of latency. Increasing batch.size and linger.ms allows the producer to accumulate more records per batch, improving throughput. Enabling compression (snappy or lz4) reduces network bandwidth and broker disk usage.",
+    "contexts": [
+      "The acks producer config controls durability: acks=0 means fire-and-forget (highest throughput, no guarantee), acks=1 waits for the leader to write (moderate), acks=all (-1) waits for all in-sync replicas (lowest throughput, strongest guarantee). Combined with min.insync.replicas=2 on the broker, acks=all ensures no data loss even if one replica fails.",
+      "Throughput tuning: batch.size (default 16384 bytes) sets the maximum bytes per batch; linger.ms (default 0) adds a delay to allow batches to fill before sending. Setting linger.ms=5 and batch.size=131072 significantly increases batch fill rate. compression.type=snappy or lz4 reduces payload size by 30–60% with minimal CPU overhead, improving both network throughput and broker storage efficiency."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q019",
+    "question": "How does faithfulness scoring work in RAGAS evaluation?",
+    "ground_truth": "RAGAS faithfulness measures the fraction of claims in the generated answer that are supported by the retrieved contexts. An LLM judge decomposes the answer into atomic claims, then for each claim determines whether it can be inferred from the provided context. The faithfulness score is the number of supported claims divided by the total number of claims, ranging from 0 to 1.",
+    "contexts": [
+      "In RAGAS, faithfulness is computed in two LLM calls: first, the answer is decomposed into a list of atomic statements (e.g., 'The capital of France is Paris'). Second, each statement is verified against the retrieved context chunks with a verdict of 1 (supported) or 0 (not supported). The final score is the mean of verdicts.",
+      "A faithfulness score of 1.0 means every claim in the answer is grounded in the retrieved context, with no hallucinated content. Low faithfulness scores indicate the model is generating content beyond what the context supports. RAGAS recommends using a capable judge model (GPT-4 or Gemini 1.5 Pro class) for reliable statement verification."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q020",
+    "question": "What is answer relevance in RAGAS and how is it calculated?",
+    "ground_truth": "Answer relevance in RAGAS measures how well the generated answer addresses the original question, penalizing incomplete or tangential responses. It is computed by prompting the judge LLM to generate N synthetic questions from the answer, embedding both the original question and the synthetic ones, and computing the mean cosine similarity. A high score means the answer content maps closely to what the question asked.",
+    "contexts": [
+      "RAGAS answer relevance generates multiple questions from the given answer using an LLM, then measures how similar these generated questions are to the original question using embedding cosine similarity. The intuition is that a good answer, when reversed, should regenerate the original question.",
+      "The answer relevance score is the mean cosine similarity between the original question embedding and each of the N generated question embeddings. Answers that are off-topic, overly verbose, or only partially address the question will produce dissimilar generated questions and score lower. The metric uses the same embedding model configured for the RAGAS run."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q021",
+    "question": "How do you implement context recall evaluation for a RAG system?",
+    "ground_truth": "Context recall measures whether the retrieved chunks contain all the information present in the ground truth answer. The RAGAS implementation decomposes the ground truth into atomic sentences and checks what fraction of them can be attributed to (i.e., are supported by) the retrieved context. A recall of 1.0 means every sentence in the ground truth is recoverable from the retrieved chunks.",
+    "contexts": [
+      "RAGAS context recall prompts the judge LLM to classify each sentence of the ground_truth answer as either attributable to the retrieved context (1) or not (0). The score is the mean of these binary labels. Low context recall means the retriever is missing relevant documents, indicating a need to increase top-k, improve the embedding model, or re-chunk the corpus.",
+      "Context recall differs from context precision: recall measures coverage of the ground truth by the retrieved context, while precision measures the fraction of retrieved chunks that are actually relevant to the question. Both metrics together characterize retriever quality; a system can have high precision but low recall if it retrieves a few very relevant chunks but misses others needed for a complete answer."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q022",
+    "question": "What is the difference between synchronous and asynchronous boto3 calls in Python?",
+    "ground_truth": "The standard boto3 library uses synchronous blocking calls, where each AWS API request blocks the thread until a response is received. aiobotocore (and its wrapper aioboto3) provides an asynchronous interface built on asyncio, allowing AWS calls to be awaited without blocking the event loop. For FastAPI or asyncio applications making frequent S3 or DynamoDB calls, aioboto3 prevents thread pool exhaustion and enables higher concurrency.",
+    "contexts": [
+      "boto3 is the official AWS SDK for Python and uses synchronous HTTP calls via the botocore library. Every s3_client.get_object() or dynamodb.put_item() call blocks the calling thread until the AWS service responds. In an asyncio application, these blocking calls should be run with loop.run_in_executor() to avoid stalling the event loop.",
+      "aioboto3 wraps aiobotocore to provide async context managers matching the boto3 API: async with aioboto3.Session().client('s3') as s3: response = await s3.get_object(Bucket=bucket, Key=key). This enables S3 downloads, uploads, and DynamoDB operations to be awaited directly inside async functions without thread pool overhead."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q023",
+    "question": "How do you structure a FastAPI application for a production RAG service?",
+    "ground_truth": "A production FastAPI RAG service separates concerns into routers (HTTP layer), services (business logic: retrieval, generation), and repositories (data access: vector store, cache). Lifespan context managers initialize shared resources like embedding models and database connections at startup. Dependency injection passes services into route handlers, enabling easy unit testing and configuration-driven swapping of backends.",
+    "contexts": [
+      "FastAPI production structure: app/main.py defines the FastAPI app with a lifespan handler that initializes the embedding model and vector store client. app/routers/query.py defines the POST /query endpoint. app/services/rag_service.py contains retrieve() and generate() methods. app/repositories/vector_store.py wraps the vector database client.",
+      "FastAPI's Depends() system enables dependency injection: def get_rag_service(settings: Settings = Depends(get_settings)) -> RagService. Route handlers declare dependencies as function arguments, allowing pytest fixtures to override them during testing. Pydantic settings classes loaded from environment variables provide configuration without hardcoded values."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q024",
+    "question": "What strategies reduce cold start latency for AWS Lambda Python functions?",
+    "ground_truth": "Lambda cold starts occur when a new execution environment is initialized, incurring the cost of loading the runtime, importing packages, and running initialization code. Key mitigation strategies are: using provisioned concurrency to keep warm instances ready, minimizing package size to reduce import time, moving heavy imports and client initialization outside the handler function, and using Graviton2 (arm64) architecture which has faster cold starts for Python.",
+    "contexts": [
+      "Lambda cold start time correlates strongly with deployment package size and initialization code outside the handler. Best practices: import only needed modules, initialize SDK clients (boto3, httpx) at module level (not inside the handler) so they are reused across invocations, and use Lambda Layers to separate large dependencies from function code, reducing deployment zip size.",
+      "Provisioned concurrency pre-initializes a specified number of execution environments, eliminating cold starts for those instances. It is configured on a Lambda alias or version and billed per GB-hour even when idle. For latency-sensitive RAG endpoints, provisioned concurrency of 2–5 instances during peak hours combined with Application Auto Scaling based on utilization metrics is a cost-effective warm-start strategy."
+    ],
+    "answer": ""
+  },
+  {
+    "id": "q025",
+    "question": "How do you implement semantic search over a vector store with a hybrid BM25 + dense retrieval approach?",
+    "ground_truth": "Hybrid search combines sparse BM25 (keyword-based) scores with dense embedding cosine similarity scores to leverage both lexical and semantic matching. Each retrieved document receives a BM25 score and a vector similarity score, which are then fused using Reciprocal Rank Fusion (RRF) or a weighted linear combination. This outperforms either method alone, especially for queries containing rare terms or proper nouns that embeddings may under-weight.",
+    "contexts": [
+      "Hybrid retrieval runs two parallel searches: a BM25 index query (e.g., using Elasticsearch or BM25Okapi from the rank_bm25 library) returning ranked document IDs, and a vector store ANN query returning top-k by cosine similarity. Results are merged with Reciprocal Rank Fusion: RRF_score(d) = sum(1 / (k + rank_i(d))) for each retrieval list i, where k=60 is a smoothing constant.",
+      "MongoDB Atlas supports hybrid search natively by combining $search (BM25 via Lucene) and $vectorSearch stages in an aggregation pipeline, then using $rankFusion to merge ranked results. The alpha parameter (0–1) controls the blend weight: alpha=1.0 is pure vector search, alpha=0.0 is pure BM25. Values around alpha=0.7 often work well for general RAG workloads."
+    ],
+    "answer": ""
+  }
+]
