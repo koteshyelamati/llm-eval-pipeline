@@ -10,3 +10,4 @@ settings:
   golden_set_path: datasets/golden_set.json
   results_output: results/eval_results.json
   fail_on_threshold: true
+# thresholds verified against 25-sample golden set
