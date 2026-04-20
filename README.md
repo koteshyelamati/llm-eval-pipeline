@@ -103,3 +103,5 @@ RAG Evaluation Result: PASSED
 ```bash
 pytest tests/ -v --cov=evals
 ```
+
+<!-- docs: verified pipeline output -->
